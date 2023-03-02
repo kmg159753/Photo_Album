@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/albums")
 public class AlbumController {
@@ -23,18 +25,23 @@ public class AlbumController {
     }
 
     @RequestMapping(value = "/query", method = RequestMethod.GET)
-
-    ResponseEntity<AlbumDto> getAlbumByQuery(@RequestParam(value="albumId") final long albumId){
+    ResponseEntity<AlbumDto> getAlbumByQuery(@RequestParam(value = "albumId") final long albumId) {
         AlbumDto album = albumService.getAlbum(albumId);
         return new ResponseEntity<>(album, HttpStatus.OK);
     }
 
 
-    @RequestMapping(value = "/json_body",method = RequestMethod.POST)
-
-    ResponseEntity<AlbumDto> getAlbumByJson(@RequestBody final AlbumDto albumDto){
+    @RequestMapping(value = "/json_body", method = RequestMethod.POST)
+    ResponseEntity<AlbumDto> getAlbumByJson(@RequestBody final AlbumDto albumDto) {
         AlbumDto album = albumService.getAlbum(albumDto.getAlbumId());
         return new ResponseEntity<>(album, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public ResponseEntity<AlbumDto> createAlbum(@RequestBody final AlbumDto albumDto) throws IOException {
+        AlbumDto savedAlbumDto = albumService.createAlbum(albumDto);
+        return new ResponseEntity<>(savedAlbumDto, HttpStatus.OK);
+
     }
 }
 
