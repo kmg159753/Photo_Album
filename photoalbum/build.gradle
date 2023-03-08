@@ -29,6 +29,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'org.hibernate:hibernate-search:5.11.1.Final'
+
+	//썸네일 축소관련 라이브러리
+	implementation 'org.imgscalr:imgscalr-lib:4.2'
 }
 
 tasks.named('test') {
