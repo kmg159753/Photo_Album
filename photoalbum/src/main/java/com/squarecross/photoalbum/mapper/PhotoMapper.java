@@ -9,16 +9,19 @@ import com.squarecross.photoalbum.dto.PhotoDto;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 public class PhotoMapper {
     public static PhotoDto convertToDto(Photo photo){
         PhotoDto photoDto = new PhotoDto();
         photoDto.setPhotoId(photo.getPhotoId());
         photoDto.setFileName(photo.getFileName());
+        photoDto.setFileSize(photo.getFileSize());
         photoDto.setOriginalUrl(photo.getOriginalUrl());
         photoDto.setThumbUrl(photo.getThumbUrl());
-        photoDto.setUploadedAt(photo.getUploadAt());
 
-        photoDto.setAlbumId(photoDto.getAlbumId());
+        if(photo.getAlbum() != null) {
+            photoDto.setAlbumId(photo.getAlbum().getAlbumId());
+        }
 
         return photoDto;
     }

@@ -4,13 +4,16 @@ package com.squarecross.photoalbum.service;
 import com.squarecross.photoalbum.Constants;
 import com.squarecross.photoalbum.domain.Album;
 import com.squarecross.photoalbum.domain.Photo;
+import com.squarecross.photoalbum.dto.AlbumDto;
 import com.squarecross.photoalbum.dto.PhotoDto;
+import com.squarecross.photoalbum.mapper.AlbumMapper;
 import com.squarecross.photoalbum.mapper.PhotoMapper;
 import com.squarecross.photoalbum.repository.AlbumRepository;
 import com.squarecross.photoalbum.repository.PhotoRepository;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,8 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PhotoService {
@@ -58,6 +61,7 @@ public class PhotoService {
             throw new RuntimeException("Could not store the file.Error: " + e.getMessage());
         }
     }
+
     public PhotoDto getPhoto(Long photoId){
         Optional<Photo> photo = this.photoRepository.findById(photoId);
 
@@ -72,6 +76,37 @@ public class PhotoService {
         }
 
     }
+
+    public List<PhotoDto> getPhotoList(Long albumId,String keyword, String sort, String orderBy){
+        List<Photo> photos= photoRepository.findByAlbum_AlbumId(albumId);
+
+        if(Objects.equals(sort,"byName") ){
+            if(Objects.equals(orderBy,"Desc")) {
+                photos = photoRepository.findByFileNameContainingOrderByFileNameDesc(keyword);
+            }else {
+                photos = photoRepository.findByFileNameContainingOrderByFileNameAsc(keyword);
+            }
+
+        }
+        else if(Objects.equals(sort,"byDate") ){
+            if(Objects.equals(orderBy,"Asc")  ) {
+                photos = photoRepository.findByFileNameContainingOrderByUploadAtAsc(keyword);
+            }
+            else {
+                photos = photoRepository.findByFileNameContainingOrderByUploadAtDesc(keyword);
+            }
+        }
+        else {
+            throw new IllegalStateException("알 수 없는 정렬 기준입니다.");
+        }
+
+        List<PhotoDto> photoDtos = PhotoMapper.convertToDtoList(photos);
+
+
+        return  photoDtos;
+
+    }
+
 
     public PhotoDto savePhoto (MultipartFile file,Long albumId){
         //앨범 아이디가 존재하는지 확인
@@ -134,5 +169,101 @@ public class PhotoService {
         }
         return new File(Constants.PATH_PREFIX + res.get().getOriginalUrl());
     }
+
+    public PhotoDto changeAlbum(Long photoId, Long fromAlbumId, Long toAlbumId) throws IOException {
+        Optional<Photo> optionalPhoto = this.photoRepository.findById(photoId);
+        Optional<Album> optionalFromAlbum = this.albumRepository.findById(fromAlbumId);
+        Optional<Album> optionalToAlbum = this.albumRepository.findById(toAlbumId);
+
+        if(optionalPhoto.isEmpty()){
+            throw new NoSuchElementException(String.format("Photo ID '%d'가 존재하지 않습니다", photoId));
+        }else if(optionalFromAlbum.isEmpty()){
+            throw new NoSuchElementException(String.format("Album ID '%d'가 존재하지 않습니다", fromAlbumId));
+        }else if(optionalToAlbum.isEmpty()){
+            throw new NoSuchElementException(String.format("Album ID '%d'가 존재하지 않습니다", toAlbumId));
+        }else {
+            Photo photo = optionalPhoto.get();
+            String photoOrlginalUrl = photo.getOriginalUrl();
+            String photoThumbUrl = photo.getThumbUrl();
+            Album FromAlbum = optionalFromAlbum.get();
+            Album ToAlbum = optionalToAlbum.get();
+
+
+            if (!Objects.equals(photo.getAlbum().getAlbumId(), FromAlbum.getAlbumId())) {
+                throw new IllegalArgumentException("사진이 해당 앨범안에 속해있지 않습니다. ");
+            }
+            if (Objects.equals(photo.getAlbum().getAlbumId(), ToAlbum.getAlbumId())) {
+                throw new IllegalArgumentException("사진이 이미 앨범에 속해있습니다. ");
+            }
+
+            //DB에서 사진의 앨범 변경
+            Photo updatePhoto = photo;
+            updatePhoto.setAlbum(ToAlbum);
+            Photo savedPhoto = this.photoRepository.save(updatePhoto);
+
+            //디렉토리 내에서 파일의 앨범 이동
+
+            Files.move(Paths.get(Constants.PATH_PREFIX + photoOrlginalUrl), Paths.get(Constants.PATH_PREFIX + "/photos/original/" + ToAlbum.getAlbumId() + "/" + photo.getFileName()));
+            Files.move(Paths.get(Constants.PATH_PREFIX + photoThumbUrl), Paths.get(Constants.PATH_PREFIX + "/photos/thumb/" + ToAlbum.getAlbumId() + "/" + photo.getFileName()));
+
+
+            /*Files.deleteIfExists(Paths.get(Constants.PATH_PREFIX + photoOrlginalUrl));
+            Files.deleteIfExists(Paths.get(Constants.PATH_PREFIX + photoThumbUrl));*/
+
+
+            /*File OriginaloldFile = new File(Constants.PATH_PREFIX + "/photos/original/" + FromAlbum.getAlbumId()+"/" +photo.getFileName() );
+            File ThumboldFile = new File(Constants.PATH_PREFIX + "/photos/thumb/" + FromAlbum.getAlbumId()+"/" +photo.getFileName() );
+
+
+
+            // 변경할 디렉토리와 파일
+
+            File OriginalnewFile = new File(Constants.PATH_PREFIX + "/photos/original/" + ToAlbum.getAlbumId() +"/"+photo.getFileName());
+            File ThumbnewFile = new File(Constants.PATH_PREFIX + "/photos/thumb/" + ToAlbum.getAlbumId() +"/"+photo.getFileName());
+
+
+
+
+            // 파일 이동
+            FileSystemUtils.copyRecursively(OriginaloldFile,OriginalnewFile);
+            FileSystemUtils.copyRecursively(ThumboldFile,ThumbnewFile);
+
+            //기존 파일 삭제
+            OriginaloldFile.delete();
+            ThumboldFile.delete();*/
+
+
+
+            /*Files.deleteIfExists(Paths.get(OriginaloldFile.toURI()));
+            Files.deleteIfExists(Paths.get(ThumboldFile));*/
+
+
+            return PhotoMapper.convertToDto(savedPhoto);
+        }
+
+    }
+
+
+
+
+
+
+    public void deletePhoto(Long photoId) throws IOException {
+        Optional<Photo> Optionalphoto = photoRepository.findById(photoId);
+
+        if(Optionalphoto.isEmpty()){
+            throw new NoSuchElementException(String.format("Photo Id '%d'가 존재하지 않습니다", photoId));
+        }
+        Photo photo = Optionalphoto.get();
+
+        photoRepository.deleteById(photoId);
+
+        //파일 삭제
+        Files.deleteIfExists(Paths.get(Constants.PATH_PREFIX+photo.getThumbUrl()));
+        Files.deleteIfExists(Paths.get(Constants.PATH_PREFIX+photo.getOriginalUrl()));
+
+    }
+
+
 
 }

@@ -32,18 +32,18 @@ public class PhotoController {
 
     //사진 상세정보 API
     @RequestMapping(value = "/{photoId}", method = RequestMethod.GET)
-    public ResponseEntity<PhotoDto> getPhoto(@PathVariable("photoId") final  Long photoId){
+    public ResponseEntity<PhotoDto> getPhoto(@PathVariable("photoId") final Long photoId) {
         PhotoDto photo = photoService.getPhoto(photoId);
         return new ResponseEntity<>(photo, HttpStatus.OK);
     }
 
     //사진 업로드 API
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public  ResponseEntity<List<PhotoDto>> uploadPhotos(@PathVariable("albumId") final  Long albumId,
-                                                        @RequestParam("photos")MultipartFile[] files){
+    public ResponseEntity<List<PhotoDto>> uploadPhotos(@PathVariable("albumId") final Long albumId,
+                                                       @RequestParam("photos") MultipartFile[] files) {
         List<PhotoDto> photos = new ArrayList<>();
-        for(MultipartFile file : files){
-            PhotoDto photoDto = photoService.savePhoto(file,albumId);
+        for (MultipartFile file : files) {
+            PhotoDto photoDto = photoService.savePhoto(file, albumId);
             photos.add(photoDto);
         }
         return new ResponseEntity<>(photos, HttpStatus.OK);
@@ -53,8 +53,7 @@ public class PhotoController {
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     public void downloadPhotos(@RequestParam("photoIds") Long[] photoIds, HttpServletResponse response) {
 
-        try{
-
+        try {
 
 
             if (photoIds.length == 1) {
@@ -106,16 +105,38 @@ public class PhotoController {
         }
     }
 
-    /*@RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<List<AlbumDto>>
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public ResponseEntity<List<PhotoDto>>
     getAlbumList(@PathVariable(value = "albumId") final Long albumId,
                  @RequestParam(value = "keyword", required = false, defaultValue = "") final String keyword,
-                 @RequestParam(value = "sort", required = false,defaultValue = "byDate") final String sort,
-                 @RequestParam(value = "orderBy",required = false, defaultValue = "") final String orderBy) {
-        List<PhotoDto> PhotoDtos = albumService.getPhotoList(albumId,keyword,sort,orderBy);
+                 @RequestParam(value = "sort", required = false, defaultValue = "byDate") final String sort,
+                 @RequestParam(value = "orderBy", required = false, defaultValue = "") final String orderBy) {
+        List<PhotoDto> PhotoDtos = photoService.getPhotoList(albumId, keyword, sort, orderBy);
         return new ResponseEntity<>(PhotoDtos, HttpStatus.OK);
-    }*/
+    }
 
 
+    //사진 앨범 옮기기
+    @RequestMapping(value = "/move", method = RequestMethod.PUT)
+    public ResponseEntity<List<PhotoDto>>
+    changeAlbum(@RequestParam(value = "fromAlbumId") final Long fromAlbumId,
+               @RequestParam(value = "toAlbumId") final Long toAlbumId,
+               @RequestParam(value = "photoIds") Long[] photoIds) throws IOException {
+
+        List<PhotoDto> photos = new ArrayList<>();
+        for(Long photoId : photoIds) {
+            PhotoDto photoDto = photoService.changeAlbum(photoId,fromAlbumId,toAlbumId );
+            photos.add(photoDto);
+        }
+        return new ResponseEntity<>(photos, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "", method = RequestMethod.DELETE)
+    public void deletePhoto(@RequestParam(value = "photoIds") final Long [] photoIds) throws IOException {
+        List<PhotoDto> photos = new ArrayList<>();
+        for(Long photoId : photoIds) {
+            photoService.deletePhoto(photoId);
+        }
+    }
 }
 

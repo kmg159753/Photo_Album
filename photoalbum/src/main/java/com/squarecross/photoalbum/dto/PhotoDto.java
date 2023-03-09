@@ -1,5 +1,7 @@
 package com.squarecross.photoalbum.dto;
 
+import com.squarecross.photoalbum.domain.Album;
+
 import java.util.Date;
 
 public class PhotoDto {
@@ -10,7 +12,9 @@ public class PhotoDto {
     private String originalUrl;
     private String thumbUrl;
     private Date uploadedAt;
+
     private Long albumId;
+
 
     public Long getPhotoId() {
         return photoId;
@@ -59,6 +63,7 @@ public class PhotoDto {
     public void setUploadedAt(Date uploadedAt) {
         this.uploadedAt = uploadedAt;
     }
+
 
     public Long getAlbumId() {
         return albumId;
