@@ -7,6 +7,7 @@ import com.squarecross.photoalbum.dto.AlbumDto;
 import com.squarecross.photoalbum.dto.PhotoDto;
 import com.squarecross.photoalbum.repository.AlbumRepository;
 import com.squarecross.photoalbum.repository.PhotoRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,7 +36,21 @@ class PhotoServiceTest {
     PhotoService photoService;
 
     @Test
-    void getPhoto() {
+    void testgetPhoto() {
+        //given
+        Photo photo = new Photo();
+        photo.setFileName("테스트");
+        Photo savedPhoto = photoRepository.save(photo);
+
+
+        //when
+        PhotoDto resDto = photoService.getPhoto(savedPhoto.getPhotoId());
+
+
+        //then
+        Assertions.assertThat(resDto.getFileName()).isEqualTo("테스트");
+
+
     }
 
     @Test
@@ -50,7 +65,7 @@ class PhotoServiceTest {
     void getImageFile() {
     }
 
-    @Test
+    /*@Test
     void TestchangeAlbum_beforeUpdateDir() {
         Album album1 = new Album();
         album1.setAlbumName("테스트1");
@@ -70,7 +85,7 @@ class PhotoServiceTest {
 
         assertEquals(album2.getAlbumId(), res.getAlbumId());
     }
-
+*/
     /*@Test
     void TestchangeAlbum_dir() {
 

@@ -59,9 +59,6 @@ public class AlbumController {
                                                 @RequestBody final AlbumDto albumDto){
         AlbumDto res = albumService.changeName(albumId,albumDto);
         return new ResponseEntity<>(res, HttpStatus.OK);
-
-
-
     }
 
     @RequestMapping(value = "/{albumId}",method = RequestMethod.DELETE)

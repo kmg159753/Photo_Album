@@ -103,6 +103,7 @@ public class AlbumService {
             albumDto.setThumbUrls(top4.stream().map(Photo::getThumbUrl).map(c->Constants.PATH_PREFIX+c).collect(Collectors.toList()));
         }
 
+
         return  albumDtos;
 
     }

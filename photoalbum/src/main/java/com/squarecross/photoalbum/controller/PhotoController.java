@@ -107,7 +107,7 @@ public class PhotoController {
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<List<PhotoDto>>
-    getAlbumList(@PathVariable(value = "albumId") final Long albumId,
+    getPhotoList(@PathVariable(value = "albumId") final Long albumId,
                  @RequestParam(value = "keyword", required = false, defaultValue = "") final String keyword,
                  @RequestParam(value = "sort", required = false, defaultValue = "byDate") final String sort,
                  @RequestParam(value = "orderBy", required = false, defaultValue = "") final String orderBy) {
