@@ -25,5 +25,4 @@ public interface AlbumRepository extends JpaRepository<Album,Long> {
 
 
 
-
 }
