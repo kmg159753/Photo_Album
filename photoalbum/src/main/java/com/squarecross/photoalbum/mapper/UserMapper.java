@@ -7,7 +7,7 @@ import com.squarecross.photoalbum.dto.UserDto;
 
 public class UserMapper {
 
-    public static UserDto converToDto(User user){
+    public static UserDto convertToDto(User user){
 
         UserDto userDto = new UserDto();
         userDto.setUserId(user.getUserId());
