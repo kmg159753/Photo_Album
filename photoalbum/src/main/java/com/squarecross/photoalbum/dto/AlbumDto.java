@@ -9,6 +9,8 @@ public class AlbumDto {
     Date createdAt;
     int count;
 
+    Long userId;
+
     private List<String> thumbUrls;
 
     public Long getAlbumId() {
@@ -49,5 +51,13 @@ public class AlbumDto {
 
     public void setThumbUrls(List<String> thumbUrls) {
         this.thumbUrls = thumbUrls;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }
