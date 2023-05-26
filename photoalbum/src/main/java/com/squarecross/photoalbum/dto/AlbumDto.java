@@ -1,5 +1,7 @@
 package com.squarecross.photoalbum.dto;
 
+import org.apache.tomcat.jni.User;
+
 import java.util.Date;
 import java.util.List;
 
@@ -9,7 +11,7 @@ public class AlbumDto {
     Date createdAt;
     int count;
 
-    Long userId;
+    User user;
 
     private List<String> thumbUrls;
 
@@ -53,11 +55,12 @@ public class AlbumDto {
         this.thumbUrls = thumbUrls;
     }
 
-    public Long getUserId() {
-        return userId;
+
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 }
