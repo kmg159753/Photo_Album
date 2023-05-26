@@ -28,6 +28,10 @@ public class Album {
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "album",cascade = CascadeType.ALL)
     private List<Photo> photos;
 
+    @ManyToOne(fetch = FetchType.LAZY )
+    @JoinColumn(name="user_id")
+    private User user;
+
 
 
     public Long getAlbumId() {
