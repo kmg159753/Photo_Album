@@ -65,4 +65,12 @@ public class Album {
     public void setPhotos(List<Photo> photos) {
         this.photos = photos;
     }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
