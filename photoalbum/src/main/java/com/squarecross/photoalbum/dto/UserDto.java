@@ -2,14 +2,16 @@ package com.squarecross.photoalbum.dto;
 
 
 import java.util.Date;
+import java.util.List;
 
 public class UserDto {
-    Long userId;
-    String userName;
-    String userEmail;
-    Date createdAt;
-    Date loginAt;
-    int count;
+    private Long userId;
+    private String userName;
+    private String userEmail;
+    private Date createdAt;
+    private Date loginAt;
+    private int count;
+    private List<AlbumDto> albums;
 
     public Long getUserId() {
         return userId;
@@ -57,5 +59,13 @@ public class UserDto {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public List<AlbumDto> getAlbums() {
+        return albums;
+    }
+
+    public void setAlbums(List<AlbumDto> albums) {
+        this.albums = albums;
     }
 }
