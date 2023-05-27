@@ -12,7 +12,6 @@ public class PhotoDto {
     private String originalUrl;
     private String thumbUrl;
     private Date uploadedAt;
-
     private Long albumId;
 
 
