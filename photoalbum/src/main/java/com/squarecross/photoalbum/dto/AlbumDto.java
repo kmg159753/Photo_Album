@@ -6,12 +6,11 @@ import java.util.Date;
 import java.util.List;
 
 public class AlbumDto {
-    Long albumId;
-    String albumName;
-    Date createdAt;
-    int count;
-
-    User user;
+    private Long albumId;
+    private String albumName;
+    private Date createdAt;
+    private int count;
+    private List<PhotoDto> photos;
 
     private List<String> thumbUrls;
 
@@ -56,11 +55,12 @@ public class AlbumDto {
     }
 
 
-    public User getUser() {
-        return user;
+
+    public List<PhotoDto> getPhotos() {
+        return photos;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setPhotos(List<PhotoDto> photos) {
+        this.photos = photos;
     }
 }
